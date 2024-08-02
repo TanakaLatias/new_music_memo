@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="record_detail">
+
+    <div class="record_info">
+        <div class="box">
+            <p class="bgc">Memo : </p>
+            <p class="main_text">{{ listened.memo }}</p>
+        </div>
+
+        <div class="box">
+            <p class="bgc">listened's info</p>
+            <p>User: <a href="{% url 'user_detail' pk=listened.user.id %}">{{ listened.user.username }}</a></p>
+            <p>Song: <a href="{% url 'song_detail_listened' pk=listened.song.pk %}">{{ listened.song.title }}</a></p>
+        </div>
+    </div>
+
+    {% if listened.user == request.user %}
+    <div class="edit">
+        <p class="bgc">Edit</p>
+        <p><a href="{% url 'listened_update' pk=listened.pk %}">> Update</a></p>
+        <p><a href="{% url 'listened_delete' pk=listened.pk %}">> Delete</a></p>
+    </div>
+    {% endif %}
+
+    <div class="box">
+        <p class="bgc">Return</p>
+        <p><a href="{% url 'listened_index' %}">> Listeneds</a></p>
+    </div>
+
+</div>
+
+{% endblock %}

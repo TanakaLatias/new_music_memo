@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="song_index">
+
+    {% if request.user.is_authenticated %}
+    <div class="box">
+        <p class="bgc">Edit</p>
+        <p><a href="{% url 'song_create' %}">> Add a new song</a></p>
+    </div>
+    {% endif %}
+
+    <div class="box orderby">
+        <p class="bgc">Sort songs by...</p>
+        <div class="orders">
+            <p><a href="{% url 'song_index' %}">Singers</a></p>
+            <p><a href="{% url 'song_index_posted' %}">Posts</a></p>
+            <p><a href="{% url 'song_index_listened' %}">Listeneds</a></p>
+            <p><a href="{% url 'song_index_scened' %}">Scenes</a></p>
+        </div>
+    </div>
+
+    {% if index %}<p class="bgc">Sorted by singers</p>
+    {% elif index_posted %}<p class="bgc">Sorted by posts</p>
+    {% elif index_listened %}<p class="bgc">Sorted by listeneds</p>
+    {% elif index_scened %}<p class="bgc">Sorted by scenes</p>
+    {% endif %}
+
+    {% if song_search %}
+
+        {% if search_results %}
+
+            <p class="bold bgc">Search Results for "{{ search_query }}" ordered by singers</p>
+            <p><a href="{% url 'song_index' %}">> Reset the search.</a></p>
+            {% for song in search_results %}
+                <div class="song">
+                    <p>{{ song.singer }}: <a href="{% url 'song_detail_post' pk=song.pk %}">{{ song.title }}</a></p>
+                </div>
+            {% endfor %}
+
+        {% else %}
+
+            <p class="bold bgc">"{{ search_query }}" was not found.</p>
+            <p><a href="{% url 'song_index' %}">> Reset the search.</a></p>
+
+        {% endif %}
+
+    {% else %}
+
+        {% if index %}
+        <form method="get" action="{% url 'song_search' %}">
+            <input type="text" name="q">
+            <button type="submit">Search</button>
+        </form>
+        {% endif %}
+
+        {% for song in songs %}
+
+            <div class="song">
+                {% if index %}<p><a href="{% url 'song_detail_post' pk=song.pk %}">{{ song.title }}</a>: {{ song.singer }}</p>
+                {% elif index_posted %}<p><a href="{% url 'song_detail_post' pk=song.pk %}">{{ song.title }}</a>{% if song.post_count != 0 %} ( {{ song.post_count }} posts ){% endif %}</p>
+                {% elif index_listened %}<p><a href="{% url 'song_detail_listened' pk=song.pk %}">{{ song.title }}</a>{% if song.listened_count != 0 %} ( {{ song.listened_count }} listened ){% endif %}</p>
+                {% elif index_scened %}<p><a href="{% url 'song_detail_scene' pk=song.pk %}">{{ song.title }}</a>{% if song.scened_count != 0 %} ( {{ song.scened_count }} scenes ){% endif %}</p>
+                {% endif %}
+            </div>
+
+        {% endfor %}
+
+        {% include 'htmls/basic_pagination.html' %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

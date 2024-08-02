@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="post_detail">
+
+    <div class="post_info">
+        <div class="box">
+            <p class="bgc">{{ post.title }}</p>
+            <p class="main_text">{{ post.text }}</p>
+            {% if post.image %}
+            <div class="img"><img src="{{ post.image.url }}" alt="image"></div>
+            {% endif %}
+        </div>
+
+        <div class="box">
+            <p class="bgc">Info:</p>
+            <p>User: <a href="{% url 'user_detail' pk=post.user.id %}">{{ post.user.username }}</a></p>
+            <p>Song: <a href="{% url 'song_detail_post' pk=post.song.pk %}">{{ post.song.title }}</a></p>
+            <p>Created at: {{ post.created_at|date:"Y-m-d" }}</p>
+            <p>Updated at: {{ post.updated_at|date:"Y-m-d" }}</p>
+            {% if post.hide %}
+            <p>Hide: {{ post.hide }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="box">
+        <p class="bgc">Like</p>
+        <p>♡ {{ liked_count }}</p>
+        {% if user.is_authenticated %}
+            {% if liked %}
+            <form method="get" action="{% url 'like_delete' pk=liked.pk %}">{% csrf_token %}
+                <button type="submit" class="pink">-♡</button>
+            </form>
+            {% else %}
+            <form method="post" action="{% url 'like_create' pk=post.pk %}">{% csrf_token %}
+                <button type="submit">+♡</button>
+            </form>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% if post.user == request.user %}
+    <div class="box">
+        <p class="bgc">Edit</p>
+        <p><a href="{% url 'post_update' pk=post.pk %}">> Update</a></p>
+        <p><a href="{% url 'post_delete' pk=post.pk %}">> Delete</a></p>
+    </div>
+    {% endif %}
+
+    <div class="box">
+        <p class="bgc">Return</p>
+        <p><a href="{% url 'post_index' %}">> Posts</a></p>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="box-two">
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="    Continue    ">
+    </form>
+    {% if user.is_authenticated %}
+    <div class="box">
+        <p class="bgc">Return</p>
+        <p><a href="{% url 'user_detail' pk=request.user.pk %}">> My Page</a></p>
+    </div>
+    {% else %}
+    <div class="box">
+        <p class="bgc">Return</p>
+        <p><a href="{% url 'top' %}">> Top</a></p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

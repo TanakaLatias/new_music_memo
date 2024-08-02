@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+    <div class="box-two">
+        <p class="bold">You sure you want to delete?</p>
+        <form method="post">{% csrf_token %}
+            <input type="submit" value="     Delete it     ">
+        </form>
+        <div class="box">
+            <p class="bgc">Return</p>
+            <p><a href="{% url 'user_detail' pk=request.user.pk %}">> My Page</a></p>
+        </div>
+    </div>
+
+{% endblock %}

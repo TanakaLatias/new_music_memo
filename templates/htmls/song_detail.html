@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="song_detail">
+
+    <div class="song_info">
+        <p class="bgc">Song's info</p>
+        <p>Title: {{ the_song.title }}</p>
+        <p>Singer: {{ the_song.singer }}</p>
+    </div>
+
+    {% if song_detail_post %}
+    
+    <div class="box">
+        <p class="bgc">Posts for this song ({{ posts_count }})</p>
+        {% for post in posts %}
+            <p class="listened"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></p>
+        {% endfor %}
+        {% if posts %}{% include 'htmls/basic_pagination.html' %}{% else %}<p>None yet.</p>{% endif %}
+    </div>
+
+    {% elif song_detail_listened %}
+
+        <div class="box">
+            <p class="bgc">listeneds for this song ({{ listeneds_count }})</p>
+            {% for listened in listeneds %}
+                <p class="listened"><a href="{% url 'song_detail_listened' pk=listened.pk %}">[ {{ listened.song }} ({{ listened.created_at|date:"Y-m-d" }}) ]</a></p>
+            {% endfor %}
+            {% if listeneds %}{% include 'htmls/basic_pagination.html' %}{% else %}<p>None yet.</p>{% endif %}
+        </div>
+
+    {% elif song_detail_scene %}
+
+        <p class="bgc">Scenes for this song ({{ scenes_count }})</p>
+        {% for scene in scenes %}
+
+        <div class="scene">
+            <p>{{ scene.poll_count }}: {{ scene }}</p>
+
+            {% if scene.image %}
+            <div class="img" style="width: 10%; height: 10%;"><img src="{{ scene.image.url }}" alt="image"></div>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                {% if scene.user == request.user %}
+                    <p><a href="{% url 'scene_delete' pk=scene.pk %}">( Delete this scene. )</a></p>
+                {% endif %}
+                {% if scene.pk in polls_dict %}
+                    {% for key, value in polls_dict.items %}
+                        {% if key == scene.pk %}
+                        <form method="get" action="{% url 'poll_delete' pk=value %}">{% csrf_token %}
+                            <button type="submit">- unpoll</button>
+                        </form>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                <form method="post" action="{% url 'poll_create' pk=scene.pk %}">{% csrf_token %}
+                    <button type="submit">+ poll</button>
+                </form>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        {% endfor %}
+        {% if scenes %}{% include 'htmls/basic_pagination.html' %}{% else %}<p>None yet.</p>{% endif %}
+
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <div class="box">
+        <p class="bgc">Edit</p>
+        <p><a href="{% url 'song_update' pk=the_song.pk %}">> Song Info Update</a></p>
+        {% if your_post %}
+            <p><a href="{% url 'post_detail' pk=your_post.pk %}">> Your Post ({{ your_post.title }})</a></p>
+        {% elif song_detail_post %}
+            <p><a href="{% url 'post_create' pk=the_song.pk %}">> Post Create</a></p>
+        {% elif song_detail_scene %}
+            <p><a href="{% url 'scene_create' pk=the_song.pk %}">> Scene Create</a></p>
+        {% elif song_detail_listened %}
+            {% for listened in your_listeneds %}
+            <p>[ <a href="{% url 'listened_detail' pk=listened.pk %}">{{ listened.pk }} Your listened.</a> ({{ listened.created_at|date:"Y-m-d" }}) ]</p>
+            {% endfor %}
+            <p><a href="{% url 'listened_create' pk=the_song.pk %}">> Listened Create</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="box">
+        <p class="bgc">Return</p>
+        <p><a href="{% url 'song_index' %}">> Songs</a></p>
+        <p><a href="{% url 'song_detail_post' pk=the_song.pk %}">> See posts</a></p>
+        <p><a href="{% url 'song_detail_listened' pk=the_song.pk %}">> See listeneds</a></p>
+        <p><a href="{% url 'song_detail_scene' pk=the_song.pk %}">> See scenes</a></p>
+    </div>
+
+</div>
+
+{% endblock %}

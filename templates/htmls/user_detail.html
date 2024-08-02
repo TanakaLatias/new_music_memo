@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+    {% if user_detail %}
+
+    <div class="user_detail">
+
+        <div class="user_detail_div">
+            <p class="bgc">{{ the_user.username }}'s posts ( {{ posts_count }} ) : </p>
+
+            {% for post in posts %}
+                {% if post.hide %}
+                <p class="gray"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></p>
+                {% else %}
+                <p><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></p>
+                {% endif %}
+            {% endfor %}
+
+            {% if posts %}<p><a href="{% url 'user_detail_posts' pk=the_user.id %}">> See all posts</a></p>{% endif %}
+        </div>
+
+        <div class="user_detail_div">
+            <p class="bgc">{{ the_user.username }}'s favorite posts ( {{ likes_count }} ) : </p>
+
+                {% for like in likes %}
+                    {% if like.post.hide %}
+                        <p>-- This post is not available now. --</p>
+                    {% else %}
+                        <p><a href="{% url 'post_detail' pk=like.post.pk %}">{{ like.post.title }}</a></p>
+                    {% endif %}
+                {% endfor %}
+
+                {% if likes %}<p><a href="{% url 'user_detail_likes' pk=the_user.id %}">> See all favorite posts</a></p>{% endif %}
+        </div>
+
+        <div class="user_detail_div">
+            <p class="bgc">Listeneds {{ the_user.username }} has listened recently ( {{ listeneds_count }} ) : </p>
+
+                {% for listened in listeneds %}
+                    <p><a href="{% url 'listened_detail' pk=listened.pk %}">{{ listened.song }}</a></p>
+                {% endfor %}
+
+                {% if listeneds %}<p><a href="{% url 'user_detail_listened' pk=the_user.id %}">> See all listeneds</a></p>{% endif %}
+        </div>
+
+        <div class="user_detail_div">
+            <p class="bgc">{{ the_user.username }}'s info : </p>
+            <p>Name: {{ the_user.username }}</p>
+            <p>Joined at: {{ the_user.date_joined|date:"Y-m-d" }}</p>
+        </div>
+
+        {% if the_user.is_authenticated and request.user.id == the_user.id %}
+        <div class="box">
+            <p class="bgc">Edit</p>
+            <p><a href="{% url 'user_update' %}">> Update your info</a></p>
+        </div>
+        {% endif %}
+
+    </div>
+
+    {% elif user_detail_posts %}
+
+    <div class="post_index">
+        <p class="bgc">{{ the_user.username }}'s posts ( {{ posts_count }} ) : </p>
+
+        {% for post in posts %}
+            <div class="post">
+                {% if post.image %}
+                    <div class="image"><img src="{{ post.image.url }}" alt=""></div>
+                {% else %}
+                    <div class="image"><img src="/media/default_images/manafi.jpg" alt=""></div>
+                {% endif %}
+                <div class="title_and_text">
+                    {% if post.hide %}
+                    <p class="gray"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a>
+                    {% else %}
+                    <p class="bgc"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a>
+                    {% endif %}
+                        {% if post.created_at > recent %} ( new! ){% elif post.updated_at > recent %} ( Updated! ){% endif %}</p>
+                    <p>{{ post.text|truncatewords:20 }}</p>
+                </div>
+            </div>
+        {% endfor %}
+        {% include 'htmls/basic_pagination.html' %}
+
+        <div class="box">
+            <p class="bgc">Return</p>
+            <p><a href="{% url 'user_detail' pk=the_user.id %}">> {{ the_user.username }}'s page</a></p>
+        </div>
+    </div>
+
+    {% elif user_detail_likes %}
+
+    <div class="post_index">
+        <p class="bgc">{{ the_user.username }}'s favorite posts ( {{ likes_count }} ) : </p>
+
+        {% for like in likes %}
+            {% if like.post.hide %}
+                <div class="post">
+                    <div class="image"><img src="/media/default_images/nuo.png" alt=""></div>
+                    <div class="title_and_text">
+                        <p class="bgc">-- This post is not available now. --</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="post">
+                    {% if like.post.image %}
+                        <div class="image"><img src="{{ like.post.image.url }}" alt=""></div>
+                    {% else %}
+                        <div class="image"><img src="/media/default_images/nuo.png" alt=""></div>
+                    {% endif %}
+                    <div class="title_and_text">
+                        <p class="bgc"><a href="{% url 'post_detail' pk=like.post.pk %}">{{ like.post.title }}</a></p>
+                        <p>{{ like.post.text|truncatewords:20 }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% include 'htmls/basic_pagination.html' %}
+
+        <div class="box">
+            <p class="bgc">Return</p>
+            <p><a href="{% url 'user_detail' pk=the_user.id %}">> {{ the_user.username }}'s page</a></p>
+        </div>
+    </div>
+
+    {% elif user_detail_listeneds %}
+
+    <div class="record_index">
+        <p class="bgc">Songs {{ the_user.username }} has listened recently ( {{ listeneds_count }} ) : </p>
+
+        {% for listened in listeneds %}
+        <div class="record">
+            <p><a href="{% url 'listened_detail' pk=listened.pk %}">{{ listened.song }}</a>: {{ listened.song.singer }}</p>
+        </div>
+        {% endfor %}
+        {% include 'htmls/basic_pagination.html' %}
+        
+        <div class="box">
+            <p class="bgc">Return</p>
+            <p><a href="{% url 'user_detail' pk=the_user.id %}">> {{ the_user.username }}'s page</a></p>
+        </div>
+    </div>
+
+    {% endif %}
+
+{% endblock %}

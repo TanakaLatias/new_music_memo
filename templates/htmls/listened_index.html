@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="record_index">
+
+    {% if listened_search %}
+
+        {% if search_results %}
+
+            <p class="bold bgc">Search Results for "{{ search_query }}"</p>
+            <p><a href="{% url 'listened_index' %}">> Reset the search.</a></p>
+            {% for listened in search_results %}
+            <div class="record">
+                <p>[ <a href="{% url 'listened_detail' pk=listened.pk %}">{{ listened.pk }} Listened.</a> {{ listened.song.title }} ({{ listened.created_at|date:"Y-m-d" }}) by {{ listened.user.username }} ]</p>
+            </div>
+            {% endfor %}
+
+        {% else %}
+
+            <p class="bold bgc">"{{ search_query }}" was not found.</p>
+            <p><a href="{% url 'listened_index' %}">> Reset the search.</a></p>
+
+        {% endif %}
+
+    {% else %}
+
+        <p class="bgc">Listened Index</p>
+
+        <form method="get" action="{% url 'listened_search' %}">
+            <input type="text" name="q">
+            <button type="submit">Search</button>
+        </form>
+
+        {% for listened in listeneds %}
+
+        <div class="record">
+            <p>[ <a href="{% url 'listened_detail' pk=listened.pk %}">{{ listened.pk }} Listened.</a> {{ listened.song.title }} ({{ listened.created_at|date:"Y-m-d" }}) by {{ listened.user.username }} ]</p>
+        </div>
+
+        {% endfor %}
+
+        {% include 'htmls/basic_pagination.html' %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

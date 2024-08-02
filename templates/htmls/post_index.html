@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="post_index">
+
+    <p class="bgc">Post Index</p>
+
+    <form method="get" action="{% url 'post_search' %}">
+        <input type="text" name="q">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if post_search %}
+
+        <p class="bold bgc">Search Results for "{{ search_query }}"</p>
+        <p><a href="{% url 'post_index' %}">> Reset the search.</a></p>
+        {% for post in search_results %}
+            <div class="post">
+                {% if post.image %}
+                    <div class="image"><img src="{{ post.image.url }}" alt=""></div>
+                {% else %}
+                    <div class="image"><img src="/media/default_images/buizel.png" alt=""></div>
+                {% endif %}
+                <div class="title_and_text">
+                    <p class="bgc"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></p>
+                    <p>{{ post.text|truncatewords:20 }}</p>
+                </div>
+            </div>
+        {% endfor %}
+
+    {% else %}
+
+        {% for post in posts %}
+
+            <div class="post">
+                {% if post.image %}
+                    <div class="image"><img src="{{ post.image.url }}" alt=""></div>
+                {% else %}
+                    <div class="image"><img src="/media/default_images/buizel.png" alt=""></div>
+                {% endif %}
+                <div class="title_and_text">
+                    <p class="bgc"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a>
+                        {% if post.created_at > recent %} ( new! ){% elif post.updated_at > recent %} ( updated! ){% endif %}</p>
+                    <p>{{ post.text|truncatewords:20 }}</p>
+                </div>
+            </div>
+
+        {% endfor %}
+        {% include 'htmls/basic_pagination.html' %}
+
+    {% endif %}
+    
+</div>
+
+{% endblock %}

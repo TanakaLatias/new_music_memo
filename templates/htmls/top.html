@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="box-two">
+
+    <p class="bold">Welcome back, {% if request.user.is_authenticated %}, {{ request.user.username }}{% endif %} :)</p>
+    <p class="bold">Music Memo will help you enjoy songs more widely and deeply.</p>
+
+    {% if not request.user.is_authenticated %}
+    <div class="box">
+        <p class="bgc">Do you have an account?</p>
+        <p><a href="{% url 'account_login' %}">> Log in and jump to your page</a></p>
+        <p><a href="{% url 'account_signup' %}">> Register</a></p>
+    </div>
+    {% else %}
+    <div class="box">
+        <p class="bgc">Jump to your page.</p>
+        <p><a href="{% url 'user_detail' pk=request.user.pk %}">> Your page</a></p>
+    </div>
+    {% endif %}
+    
+    <div class="box">
+        <p class="bgc">Main pages</p>
+        <p><a href="{% url 'song_index' %}">> Songs</a></p>
+        <p><a href="{% url 'post_index' %}">> Posts</a></p>
+        <p><a href="{% url 'listened_index' %}">> Listeneds</a></p>
+    </div>
+
+</div>
+
+{% endblock %}
